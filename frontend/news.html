@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>News Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        header {
+            background: #222;
+            padding: 15px;
+            display: flex;
+            gap: 20px;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        body {
+            font-family: Arial;
+        }
+        .item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 8px 0;
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <a href="index.html">Home</a>
+    <a href="news.html">News</a>
+    <a href="sports.html">Sports</a>
+    <a href="economy.html">Economy</a>
+</header>
+
+<h1>News CRUD</h1>
+
+<h2>Create News</h2>
+<input id="title" placeholder="Title">
+<input id="content" placeholder="Content">
+<button onclick="createNews()">Create</button>
+
+<h2>All News</h2>
+<div id="news-list"></div>
+
+<script>
+const BASE = "http://127.0.0.1:5000/news";
+
+async function loadNews() {
+    const res = await axios.get(BASE);
+    const list = document.getElementById("news-list");
+    list.innerHTML = "";
+
+    res.data.forEach(item => {
+        list.innerHTML += `
+            <div class="item">
+                <b>${item.title}</b><br>
+                ${item.content}<br><br>
+
+                <button onclick="deleteNews(${item.id})">Delete</button>
+            </div>
+        `;
+    });
+}
+
+async function createNews() {
+    await axios.post(BASE, {
+        title: document.getElementById("title").value,
+        content: document.getElementById("content").value
+    });
+
+    loadNews();
+}
+
+async function deleteNews(id) {
+    await axios.delete(`${BASE}/${id}`);
+    loadNews();
+}
+
+loadNews();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Economy Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        header {
+            background: #222;
+            padding: 15px;
+            display: flex;
+            gap: 20px;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 8px 0;
+        }
+        body { font-family: Arial; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="index.html">Home</a>
+    <a href="news.html">News</a>
+    <a href="sports.html">Sports</a>
+    <a href="economy.html">Economy</a>
+</header>
+
+<h1>Economy CRUD</h1>
+
+<h2>Create Market Entry</h2>
+<input id="market" placeholder="Market">
+<input id="status" placeholder="Status">
+<button onclick="createEntry()">Create</button>
+
+<h2>Economy List</h2>
+<div id="eco-list"></div>
+
+<script>
+const BASE = "http://127.0.0.1:5000/economy";
+
+async function loadEconomy() {
+    const res = await axios.get(BASE);
+    const list = document.getElementById("eco-list");
+    list.innerHTML = "";
+
+    res.data.forEach(item => {
+        list.innerHTML += `
+            <div class="item">
+                <b>${item.market}</b> — ${item.status}<br><br>
+                <button onclick="deleteEntry(${item.id})">Delete</button>
+            </div>
+        `;
+    });
+}
+
+async function createEntry() {
+    await axios.post(BASE, {
+        market: document.getElementById("market").value,
+        status: document.getElementById("status").value
+    });
+    loadEconomy();
+}
+
+async function deleteEntry(id) {
+    await axios.delete(`${BASE}/${id}`);
+    loadEconomy();
+}
+
+loadEconomy();
+</script>
+
+</body>
+</html>

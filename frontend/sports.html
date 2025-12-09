@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sports Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+        header {
+            background: #222;
+            padding: 15px;
+            display: flex;
+            gap: 20px;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 8px 0;
+        }
+        body { font-family: Arial; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="index.html">Home</a>
+    <a href="news.html">News</a>
+    <a href="sports.html">Sports</a>
+    <a href="economy.html">Economy</a>
+</header>
+
+<h1>Sports CRUD</h1>
+
+<h2>Create Match</h2>
+<input id="team" placeholder="Team">
+<input id="score" placeholder="Score">
+<button onclick="createSport()">Create</button>
+
+<h2>Sports List</h2>
+<div id="sports-list"></div>
+
+<script>
+const BASE = "http://127.0.0.1:5000/sports";
+
+async function loadSports() {
+    const res = await axios.get(BASE);
+    const list = document.getElementById("sports-list");
+    list.innerHTML = "";
+
+    res.data.forEach(item => {
+        list.innerHTML += `
+            <div class="item">
+                <b>${item.team}</b> — ${item.score}<br><br>
+                <button onclick="deleteSport(${item.id})">Delete</button>
+            </div>
+        `;
+    });
+}
+
+async function createSport() {
+    await axios.post(BASE, {
+        team: document.getElementById("team").value,
+        score: document.getElementById("score").value
+    });
+    loadSports();
+}
+
+async function deleteSport(id) {
+    await axios.delete(`${BASE}/${id}`);
+    loadSports();
+}
+
+loadSports();
+</script>
+
+</body>
+</html>
